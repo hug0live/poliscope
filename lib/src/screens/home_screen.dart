@@ -6,36 +6,10 @@ import '../theme.dart';
 import '../widgets/poliscope_backdrop.dart';
 import 'questionnaire_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, required this.repository});
 
   final QuestionnaireRepository repository;
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  bool _revealed = false;
-
-  static const List<String> _profiles = <String>[
-    'Gauche sociale',
-    'Écologiste',
-    'Centre progressiste',
-    'Droite républicaine',
-    'Droite nationale',
-    'Libertaire solidaire',
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() => _revealed = true);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,177 +19,159 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PoliscopeBackdrop(
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
+            padding: const EdgeInsets.all(24),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 540),
+                constraints: const BoxConstraints(maxWidth: 1120),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 700),
-                      opacity: _revealed ? 1 : 0,
-                      child: AnimatedSlide(
-                        duration: const Duration(milliseconds: 700),
-                        curve: Curves.easeOutCubic,
-                        offset: _revealed ? Offset.zero : const Offset(0, 0.08),
-                        child: PoliscopePanel(
-                          accentColor: AppPalette.coral,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppPalette.coral.withValues(
-                                    alpha: 0.12,
-                                  ),
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  'Questionnaire politique',
-                                  style: theme.textTheme.labelLarge?.copyWith(
-                                    color: AppPalette.ink,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              Text(
-                                'Le test politique qui te ressemble.',
-                                style: theme.textTheme.displayMedium?.copyWith(
-                                  fontSize: 42,
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                              Text(
-                                'Tu réponds au feeling, l’app compare tes choix sur plusieurs axes et te montre les courants politiques français qui te ressemblent le plus.',
-                                style: theme.textTheme.bodyLarge,
-                              ),
-                              const SizedBox(height: 20),
-                              Wrap(
-                                spacing: 10,
-                                runSpacing: 10,
-                                children: const [
-                                  _InfoChip(
-                                    icon: Icons.auto_awesome_rounded,
-                                    label: '8 profils',
-                                  ),
-                                  _InfoChip(
-                                    icon: Icons.tune_rounded,
-                                    label: '5 axes',
-                                  ),
-                                  _InfoChip(
-                                    icon: Icons.smartphone_rounded,
-                                    label: 'Mobile-first',
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.explore_rounded,
+                          color: AppPalette.coral,
+                          size: 32,
                         ),
-                      ),
+                        const SizedBox(width: 10),
+                        Text('Poliscope', style: theme.textTheme.titleLarge),
+                      ],
                     ),
-                    const SizedBox(height: 18),
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 850),
-                      opacity: _revealed ? 1 : 0,
-                      child: AnimatedSlide(
-                        duration: const Duration(milliseconds: 850),
-                        curve: Curves.easeOutCubic,
-                        offset: _revealed ? Offset.zero : const Offset(0, 0.12),
-                        child: Column(
+                    const SizedBox(height: 40),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final wide = constraints.maxWidth >= 800;
+                        final introduction = Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                              'TES IDÉES, EN PERSPECTIVE',
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                letterSpacing: 2,
+                                color: AppPalette.mutedInk,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              'Le test politique qui te ressemble.',
+                              style: theme.textTheme.displayMedium?.copyWith(
+                                fontSize: wide ? 64 : 42,
+                                height: 1.08,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              'Économie, écologie, société… Explore tes convictions et découvre les courants politiques français les plus proches de tes idées.',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                fontSize: 18,
+                                height: 1.6,
+                              ),
+                            ),
+                            const SizedBox(height: 28),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              children: [
+                                for (final code in axisDisplayOrder)
+                                  Chip(
+                                    avatar: Icon(
+                                      axisIcon(code),
+                                      size: 18,
+                                      color: AppPalette.ink,
+                                    ),
+                                    label: Text(axisPillLabel(code)),
+                                    backgroundColor: axisColor(
+                                      code,
+                                    ).withValues(alpha: 0.12),
+                                    side: BorderSide.none,
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              '5 axes de réflexion · 8 profils de référence',
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ],
+                        );
+                        final modes = Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              'À toi de choisir le rythme',
+                              style: theme.textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 16),
                             _ModeCard(
                               mode: QuizMode.express,
                               accentColor: AppPalette.sky,
-                              ctaLabel: 'Je veux un aperçu rapide',
-                              onTap: () => _openQuiz(QuizMode.express),
+                              ctaLabel: 'Commencer le test express',
+                              onTap: () => _openQuiz(context, QuizMode.express),
                             ),
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 16),
                             _ModeCard(
                               mode: QuizMode.complete,
                               accentColor: AppPalette.lime,
-                              ctaLabel: 'Je vais au bout du test',
-                              onTap: () => _openQuiz(QuizMode.complete),
+                              ctaLabel: 'Explorer le test complet',
+                              onTap: () =>
+                                  _openQuiz(context, QuizMode.complete),
                             ),
                           ],
-                        ),
-                      ),
+                        );
+                        return wide
+                            ? Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(flex: 6, child: introduction),
+                                  const SizedBox(width: 64),
+                                  Expanded(flex: 5, child: modes),
+                                ],
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  introduction,
+                                  const SizedBox(height: 32),
+                                  modes,
+                                ],
+                              );
+                      },
                     ),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 40),
                     PoliscopePanel(
-                      accentColor: AppPalette.gold,
+                      accentColor: AppPalette.coral,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Ce que tu vas trouver ici',
+                            'Mieux te situer, sans te coller une étiquette.',
                             style: theme.textTheme.headlineMedium,
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 24),
                           const _FeatureLine(
-                            title: 'Pas de jargon inutile',
+                            title: '01 · Donne ton point de vue',
                             description:
-                                'Les questions ont été reformulées pour être directes et compréhensibles.',
+                                'Choisis la réponse qui te correspond le mieux. Tu peux revenir à la question précédente pour la modifier.',
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 18),
                           const _FeatureLine(
-                            title: 'Un résultat nuancé',
+                            title: '02 · Découvre tes proximités',
                             description:
-                                'On parle de proximité politique, pas d’étiquette définitive.',
+                                'Compare les profils proches de tes réponses et retrouve ton positionnement sur chacun des cinq axes.',
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 18),
                           const _FeatureLine(
-                            title: 'Un vrai rythme mobile',
+                            title: '03 · Garde ton esprit critique',
                             description:
-                                'Grandes cartes, progression claire, et un mode express qui évite le tunnel de 200 questions.',
+                                'Le résultat est une piste de réflexion, pas une identité définitive ni une consigne de vote.',
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 18),
-                    PoliscopePanel(
-                      accentColor: AppPalette.cyan,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Quelques profils que tu peux croiser',
-                            style: theme.textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            children: _profiles
-                                .map(
-                                  (profile) => Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 14,
-                                      vertical: 10,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.72,
-                                      ),
-                                      borderRadius: BorderRadius.circular(999),
-                                      border: Border.all(
-                                        color: AppPalette.line,
-                                      ),
-                                    ),
-                                    child: Text(
-                                      profile,
-                                      style: theme.textTheme.labelLarge,
-                                    ),
-                                  ),
-                                )
-                                .toList(growable: false),
-                          ),
-                        ],
-                      ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Poliscope · Un point de départ pour réfléchir à tes idées.',
+                      style: theme.textTheme.bodyMedium,
                     ),
                   ],
                 ),
@@ -227,11 +183,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _openQuiz(QuizMode mode) {
+  void _openQuiz(BuildContext context, QuizMode mode) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) =>
-            QuestionnaireScreen(repository: widget.repository, mode: mode),
+        builder: (_) => QuestionnaireScreen(repository: repository, mode: mode),
       ),
     );
   }
@@ -257,7 +212,7 @@ class _ModeCard extends StatelessWidget {
     return PoliscopePanel(
       accentColor: accentColor,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
@@ -308,35 +263,6 @@ class _ModeCard extends StatelessWidget {
             icon: const Icon(Icons.arrow_forward_rounded),
             label: Text(ctaLabel),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppPalette.line),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 18, color: AppPalette.ink),
-          const SizedBox(width: 8),
-          Text(label, style: theme.textTheme.labelLarge),
         ],
       ),
     );

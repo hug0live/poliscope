@@ -1,11 +1,11 @@
 {
-    "name": "poliscope",
-    "short_name": "poliscope",
+    "name": "Poliscope",
+    "short_name": "Poliscope",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FFF7F0",
+    "theme_color": "#FFF7F0",
+    "description": "Explore tes convictions et découvre tes proximités politiques.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
